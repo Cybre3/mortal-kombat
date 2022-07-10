@@ -5,45 +5,33 @@ var cors = require("cors");
 var cookieParser = require("cookie-parser");
 require("dotenv").config();
 // const { MongoClient } = require("mongodb");
-var MongoClient = require('mongodb').MongoClient;
-var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dzllk8p.mongodb.net/?retryWrites=true&w=majority`
-
+var MongoClient = require("mongodb").MongoClient;
+var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dzllk8p.mongodb.net/?retryWrites=true&w=majority`;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors);
 app.use(cookieParser());
 
-// mongoDB connection
-// const client = new MongoClient(
-//   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dzllk8p.mongodb.net/?retryWrites=true&w=majority`,
-//   {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   }
-// );
+async function databaseConnect() {
+  const uri =
+    "mongodb+srv://Raiden:earthrealm_warriors@cluster0.dzllk8p.mongodb.net/?retryWrites=true&w=majority";
 
-MongoClient.connect(url, function(err, db) {
-  if (err) throw err;
-  var dbo = db.db("characters");
-  dbo.collection("names").find({}).toArray(function(err, result) {
-    if (err) throw err;
-    console.log(result);
-    db.close();
-  });
-});
-// client.connect((err) => {
-//   const collection = client.db("characters").collection("names");
+  const client = new MongoClient(uri);
 
-//   // collection
-//   //   .find({})
-//   //   .then((data) => {
-//   //     console.log("data", data);
-//   //     this.resource.json(data);
-//   //   })
-//   //   .catch((err) => console.log(err));
-//   console.log("Connected to db - Mortal Kombat!");
-// });
+  try {
+    await client.connect(() => {
+      console.log("Connected to db - Mortal Kombat!");
+    });
+    // await findCharacters(client);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await client.close();
+  }
+}
+
+databaseConnect().catch(console.error);
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {

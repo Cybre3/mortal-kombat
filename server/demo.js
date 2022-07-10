@@ -7,7 +7,9 @@ async function main() {
   const client = new MongoClient(uri);
 
   try {
-    await client.connect();
+    await client.connect(() => {
+      console.log("DB connected and working!")
+    });
     await findCharacters(client);
   } catch (e) {
     console.error(e);
